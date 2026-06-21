@@ -1,6 +1,5 @@
 # medaka-apis
 
-
 ## 目次
 
 - [medaka-apis](#medaka-apis)
