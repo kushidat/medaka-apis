@@ -21,22 +21,17 @@ curl -X POST "https://knowledge.brc.riken.jp/sparql" \
   "graph": "http://metadb.riken.jp/db/medaka_test",
   "limit": 500,
   "offset": 0,
-  "row_count": 3,
+  "row_count": 2,
   "rows": [
     {
-      "s": "http://example.org/medaka/gene/001",
-      "p": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-      "o": "http://example.org/Gene"
+      "s": "実際のSPARQL結果の subject URI（例）",
+      "p": "実際のSPARQL結果の predicate URI（例）",
+      "o": "実際のSPARQL結果の object 値（URIまたはリテラル）"
     },
     {
-      "s": "http://example.org/medaka/gene/001",
-      "p": "http://example.org/name",
-      "o": "gene_name_001"
-    },
-    {
-      "s": "http://example.org/medaka/gene/001",
-      "p": "http://example.org/description",
-      "o": "Description of gene 001"
+      "s": "http://example.org/resource/2",
+      "p": "http://example.org/property/name",
+      "o": "sample literal"
     }
   ]
 }
@@ -44,9 +39,8 @@ curl -X POST "https://knowledge.brc.riken.jp/sparql" \
 
 ### テキスト形式（TSV）
 ```
-http://example.org/medaka/gene/001	http://www.w3.org/1999/02/22-rdf-syntax-ns#type	http://example.org/Gene
-http://example.org/medaka/gene/001	http://example.org/name	gene_name_001
-http://example.org/medaka/gene/001	http://example.org/description	Description of gene 001
+<subject_URI_1>	<predicate_URI_1>	<object_1>
+<subject_URI_2>	<predicate_URI_2>	<object_2>
 ```
 
 ## パラメータ説明
