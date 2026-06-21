@@ -64,3 +64,19 @@ curl -X POST "https://knowledge.brc.riken.jp/sparql" \
 - 2026-06-21: README先頭の不要な空行を削除。
 - 2026-06-21: `medaka_sample_by_graph.md` に出力注意事項を追記。
 - 2026-06-21: curl実行例を `--data-urlencode` 使用の可読版に変更。
+
+## HTTPステータスとエラーレスポンス
+
+- `200 OK`: 正常終了（`rows`, `row_count` を返却）
+- `400 Bad Request`: 必須パラメータ不足・不正（例: `graph` 未指定）
+- `502 Bad Gateway`: 上流SPARQLエンドポイント異常
+- `500 Internal Server Error`: その他の予期しない例外
+
+### エラーレスポンス例（JSON）
+```json
+{
+  "error": {
+    "code": "BAD_REQUEST",
+    "message": "graph parameter is required"
+  }
+}
