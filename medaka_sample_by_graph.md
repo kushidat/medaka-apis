@@ -52,3 +52,8 @@ OFFSET 0
   }
 })
 ```
+
+## Notes
+- `rows[].o` は URI の場合とリテラルの場合があります。
+- `rows` は `query.results.bindings` を整形した結果で、値はグラフ内容に依存します。
+- `row_count` は取得件数（`rows.length`）です。
