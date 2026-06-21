@@ -1,13 +1,13 @@
 # medaka_sample_by_graph
 指定グラフからトリプルをサンプル取得（構造確認用）
 
-## Parameters
+## パラメータ
 * `graph` （必須。named graph URI を指定）
   * 例: `http://metadb.riken.jp/db/medaka_test`
 * `limit` （任意, default 500）
 * `offset`（任意, default 0）
 
-## Endpoint
+## エンドポイント
 https://knowledge.brc.riken.jp/sparql
 
 ## `query`
@@ -29,7 +29,7 @@ OFFSET 0
 {{/if}}
 ```
 
-## Output
+## 出力
 ```javascript
 ({
   json({query, graph, limit, offset}) {
@@ -53,7 +53,7 @@ OFFSET 0
 })
 ```
 
-## Notes
+## 注意事項
 - `rows[].o` は URI の場合とリテラルの場合があります。
 - `rows` は `query.results.bindings` を整形した結果で、値はグラフ内容に依存します。
 - `row_count` は取得件数（`rows.length`）です。
