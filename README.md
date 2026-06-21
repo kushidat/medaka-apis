@@ -63,3 +63,4 @@ curl -X POST "https://knowledge.brc.riken.jp/sparql" \
 - 2026-06-21: TSV例をタブ区切り前提に修正。
 - 2026-06-21: README先頭の不要な空行を削除。
 - 2026-06-21: `medaka_sample_by_graph.md` に出力注意事項を追記。
+- 2026-06-21: curl実行例を `--data-urlencode` 使用の可読版に変更。
