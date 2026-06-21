@@ -1,4 +1,3 @@
-
 # medaka-apis
 
 Medaka向けSPARQL APIテンプレート集です。
