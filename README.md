@@ -1,3 +1,4 @@
+
 # medaka-apis
 
 Medaka向けSPARQL APIテンプレート集です。
@@ -39,8 +40,8 @@ curl -X POST "https://knowledge.brc.riken.jp/sparql" \
 
 ### テキスト形式（TSV）
 ```
-<subject_URI_1> <predicate_URI_1> <object_1>
-<subject_URI_2> <predicate_URI_2> <object_2>
+<subject_URI_1>	<predicate_URI_1>	<object_1>
+<subject_URI_2>	<predicate_URI_2>	<object_2>
 ```
 
 ## パラメータ説明
