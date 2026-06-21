@@ -12,7 +12,7 @@ Medaka向けSPARQL APIテンプレート集です。
 ```bash
 curl -X POST "https://knowledge.brc.riken.jp/sparql" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "query=SELECT%20%3Fs%20%3Fp%20%3Fo%20FROM%20%3Chttp%3A%2F%2Fmetadb.riken.jp%2Fdb%2Fmedaka_test%3E%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%20.%7D%20LIMIT%20500"
+  --data-urlencode "query=SELECT ?s ?p ?o FROM <http://metadb.riken.jp/db/medaka_test> WHERE { ?s ?p ?o . } LIMIT 500"
 ```
 
 ### レスポンス例（JSON）
