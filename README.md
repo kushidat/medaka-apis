@@ -1,5 +1,19 @@
 # medaka-apis
 
+
+## 目次
+
+- [medaka-apis](#medaka-apis)
+- [medaka_sample_by_graph](#medaka_sample_by_graph)
+  - [パラメータ](#パラメータ)
+  - [エンドポイント](#エンドポイント)
+  - [`query`](#query)
+  - [出力](#出力)
+  - [注意事項](#注意事項)
+- [Changelog](#changelog)
+- [HTTPステータスとエラーレスポンス](#httpステータスとエラーレスポンス)
+  - [エラーレスポンス例（JSON）](#エラーレスポンス例json)
+
 Medaka向けSPARQL APIテンプレート集です。
 
 ## Files
