@@ -56,3 +56,10 @@ curl -X POST "https://knowledge.brc.riken.jp/sparql" \
 - `rows[].o` は **URI の場合**と **リテラルの場合**があります。
 - 本テンプレートの `rows` は `query.results.bindings` をそのまま整形して返すため、値はグラフ内容に依存します。
 - `row_count` は取得件数（`rows.length`）です。
+## Changelog
+
+- 2026-06-21: レスポンス例を「実データ依存」の説明に修正。
+- 2026-06-21: `rows[].o` が URI / リテラル両対応である注意事項を追加。
+- 2026-06-21: TSV例をタブ区切り前提に修正。
+- 2026-06-21: README先頭の不要な空行を削除。
+- 2026-06-21: `medaka_sample_by_graph.md` に出力注意事項を追記。
