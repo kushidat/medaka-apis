@@ -54,4 +54,5 @@ curl -X POST "https://knowledge.brc.riken.jp/sparql" \
 ## 注意事項
 
 - `rows[].o` は **URI の場合**と **リテラルの場合**があります。
-- 本テンプレートの \rows` は `query.results.bindings` をそのまま整形して返すため、値はグラフ内容に依存します。`
+- 本テンプレートの `rows` は `query.results.bindings` をそのまま整形して返すため、値はグラフ内容に依存します。
+- `row_count` は取得件数（`rows.length`）です。
