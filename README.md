@@ -39,8 +39,8 @@ curl -X POST "https://knowledge.brc.riken.jp/sparql" \
 
 ### テキスト形式（TSV）
 ```
-<subject_URI_1>	<predicate_URI_1>	<object_1>
-<subject_URI_2>	<predicate_URI_2>	<object_2>
+<subject_URI_1> <predicate_URI_1> <object_1>
+<subject_URI_2> <predicate_URI_2> <object_2>
 ```
 
 ## パラメータ説明
@@ -50,3 +50,8 @@ curl -X POST "https://knowledge.brc.riken.jp/sparql" \
 | `graph` | ✓ | - | named graph URI |
 | `limit` | - | 500 | 取得行数の上限 |
 | `offset` | - | 0 | スキップ行数 |
+
+## 注意事項
+
+- `rows[].o` は **URI の場合**と **リテラルの場合**があります。
+- 本テンプレートの \rows` は `query.results.bindings` をそのまま整形して返すため、値はグラフ内容に依存します。`
