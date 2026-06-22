@@ -5,10 +5,20 @@ PREFIX brso: <http://purl.org.jp/brso/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 # medaka_test → medaka_strains
+#
 # dc:identifier is misspelled in two ways in the source graph:
-#   dc:identifiere (297 occurrences) and dc:identifire (40 occurrences).
+#   dc:identifiere (297 occurrences, all subjects) and dc:identifire (40 occurrences, subset).
 # UNION captures both; column is named medaka_id (correct spelling).
-# deposit_org: blank node resolved to English rdfs:label (LANG="en").
+#
+# brso:BiologicalResource type filter is placed INSIDE each UNION branch (not after).
+# The endpoint at knowledge.brc.riken.jp fails to return results when the type
+# constraint is placed outside the UNION.
+#
+# rdfs:label: untagged (lang='') in source — 1 label per BiologicalResource, no filter needed.
+# dc:description: 54 strains have both @en and @ja versions; FILTER(LANG=...) with
+#   SINGLE quotes must be used — this endpoint returns 0 rows when double-quoted
+#   string literals appear inside OPTIONAL FILTER blocks after a UNION.
+# deposit_org: blank node resolved to English rdfs:label (single-quoted 'en').
 
 SELECT DISTINCT
   ?medaka_id
@@ -20,16 +30,25 @@ SELECT DISTINCT
 WHERE {
   GRAPH <http://metadb.riken.jp/db/medaka_test> {
 
-    { ?s <http://purl.org/dc/elements/1.1/identifiere> ?medaka_id }
+    {
+      ?s <http://purl.org/dc/elements/1.1/identifiere> ?medaka_id .
+      ?s rdf:type brso:BiologicalResource .
+    }
     UNION
-    { ?s <http://purl.org/dc/elements/1.1/identifire>  ?medaka_id }
+    {
+      ?s <http://purl.org/dc/elements/1.1/identifire> ?medaka_id .
+      ?s rdf:type brso:BiologicalResource .
+    }
 
     OPTIONAL { ?s rdfs:label ?label }
-    OPTIONAL { ?s dc:description ?description }
+    OPTIONAL {
+      ?s dc:description ?description .
+      FILTER(LANG(?description) = 'en')
+    }
     OPTIONAL {
       ?s brso:deposit_organization ?org .
       ?org rdfs:label ?deposit_org .
-      FILTER(LANG(?deposit_org) = "en")
+      FILTER(LANG(?deposit_org) = 'en')
     }
     OPTIONAL { ?s brso:provider ?provider }
     OPTIONAL { ?s foaf:homepage ?homepage }

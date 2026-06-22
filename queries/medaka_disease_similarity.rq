@@ -7,6 +7,12 @@ PREFIX sio: <http://semanticscience.org/resource/>
 # Only cosine similarity is present in this graph.
 # disease_id is normalised to CURIE format: Orphanet:NNN or OMIM:NNN.
 # disease_source is derived from the disease IRI prefix.
+#
+# NOTE: The endpoint at knowledge.brc.riken.jp returns incomplete results for the
+# same-predicate-twice join pattern (?assoc SIO_000628 ?medaka ; SIO_000628 ?disease)
+# when medaka IRI is bound via FILTER rather than a specific IRI.
+# In practice 02_extract.py builds this table by parsing data/raw/*_triples.tsv
+# in Python to avoid the endpoint quirk. This .rq file documents the intended logic.
 
 SELECT
   (REPLACE(STR(?medaka), "http://lod.nbrp/Medaka/", "") AS ?medaka_id)
