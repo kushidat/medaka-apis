@@ -1,0 +1,29 @@
+PREFIX sio: <http://semanticscience.org/resource/>
+
+# medaka_disease_similarityScore → medaka_disease_similarity
+# Reified structure: assoc node --SIO_000628--> medaka IRI
+#                               --SIO_000628--> disease IRI
+#                               --SIO_000216--> metric node --SIO_000300--> score
+# Only cosine similarity is present in this graph.
+# disease_id is normalised to CURIE format: Orphanet:NNN or OMIM:NNN.
+# disease_source is derived from the disease IRI prefix.
+
+SELECT
+  (REPLACE(STR(?medaka), "http://lod.nbrp/Medaka/", "") AS ?medaka_id)
+  (IF(CONTAINS(STR(?disease), "orphanet"),
+      CONCAT("Orphanet:", REPLACE(STR(?disease), "http://identifiers.org/orphanet/", "")),
+      CONCAT("OMIM:",     REPLACE(STR(?disease), "http://purl.bioontology.org/ontology/OMIM/", ""))
+  ) AS ?disease_id)
+  (IF(CONTAINS(STR(?disease), "orphanet"), "ordo", "omim") AS ?disease_source)
+  (STR(?score) AS ?score)
+WHERE {
+  GRAPH <http://metadb.riken.jp/db/medaka_disease_similarityScore> {
+    ?assoc sio:SIO_000628 ?medaka ;
+           sio:SIO_000628 ?disease ;
+           sio:SIO_000216 ?metric .
+    ?metric sio:SIO_000300 ?score .
+    FILTER( CONTAINS(STR(?medaka),  "lod.nbrp"))
+    FILTER(!CONTAINS(STR(?disease), "lod.nbrp"))
+  }
+}
+ORDER BY ?medaka_id ?disease_id

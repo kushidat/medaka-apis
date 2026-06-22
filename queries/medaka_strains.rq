@@ -1,0 +1,38 @@
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dc:   <http://purl.org/dc/elements/1.1/>
+PREFIX brso: <http://purl.org.jp/brso/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+# medaka_test → medaka_strains
+# dc:identifier is misspelled in two ways in the source graph:
+#   dc:identifiere (297 occurrences) and dc:identifire (40 occurrences).
+# UNION captures both; column is named medaka_id (correct spelling).
+# deposit_org: blank node resolved to English rdfs:label (LANG="en").
+
+SELECT DISTINCT
+  ?medaka_id
+  (COALESCE(?label,       "NA") AS ?label)
+  (COALESCE(?description, "NA") AS ?description)
+  (COALESCE(?deposit_org, "NA") AS ?deposit_org)
+  (COALESCE(STR(?provider), "NA") AS ?provider)
+  (COALESCE(STR(?homepage), "NA") AS ?homepage)
+WHERE {
+  GRAPH <http://metadb.riken.jp/db/medaka_test> {
+
+    { ?s <http://purl.org/dc/elements/1.1/identifiere> ?medaka_id }
+    UNION
+    { ?s <http://purl.org/dc/elements/1.1/identifire>  ?medaka_id }
+
+    OPTIONAL { ?s rdfs:label ?label }
+    OPTIONAL { ?s dc:description ?description }
+    OPTIONAL {
+      ?s brso:deposit_organization ?org .
+      ?org rdfs:label ?deposit_org .
+      FILTER(LANG(?deposit_org) = "en")
+    }
+    OPTIONAL { ?s brso:provider ?provider }
+    OPTIONAL { ?s foaf:homepage ?homepage }
+  }
+}
+ORDER BY ?medaka_id

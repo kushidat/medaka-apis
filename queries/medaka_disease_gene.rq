@@ -1,0 +1,21 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+
+# medaka_diseaseID_throughMedgen_direct → medaka_disease_gene
+# Simple flat triples: medaka_strain --RO:0003301--> disease_IRI
+# disease_id normalised to CURIE: Orphanet:NNN or OMIM:NNN.
+# Orphanet IRI in this graph: http://www.orpha.net/ORDO/Orphanet_<id>
+# OMIM IRI in this graph:     http://identifiers.org/mim/<id>
+
+SELECT
+  (REPLACE(STR(?medaka), "http://lod.nbrp/Medaka/", "") AS ?medaka_id)
+  (IF(CONTAINS(STR(?disease), "orpha.net"),
+      CONCAT("Orphanet:", REPLACE(STR(?disease), "http://www.orpha.net/ORDO/Orphanet_", "")),
+      CONCAT("OMIM:",     REPLACE(STR(?disease), "http://identifiers.org/mim/", ""))
+  ) AS ?disease_id)
+  (IF(CONTAINS(STR(?disease), "orpha.net"), "ordo", "omim") AS ?disease_source)
+WHERE {
+  GRAPH <http://metadb.riken.jp/db/medaka_diseaseID_throughMedgen_direct> {
+    ?medaka obo:RO_0003301 ?disease .
+  }
+}
+ORDER BY ?medaka_id ?disease_id

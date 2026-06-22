@@ -1,0 +1,15 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+
+# medaka_hp → medaka_phenotype_hp
+# Simple flat triples: medaka_strain --RO:0002200--> HP_term
+# hp_id normalised to CURIE format: HP:NNNNNNN
+
+SELECT
+  (REPLACE(STR(?medaka), "http://lod.nbrp/Medaka/", "") AS ?medaka_id)
+  (CONCAT("HP:", REPLACE(STR(?hp), "http://purl.obolibrary.org/obo/HP_", "")) AS ?hp_id)
+WHERE {
+  GRAPH <http://metadb.riken.jp/db/medaka_hp> {
+    ?medaka obo:RO_0002200 ?hp .
+  }
+}
+ORDER BY ?medaka_id ?hp_id

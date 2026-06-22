@@ -1,0 +1,16 @@
+table_name,column_name,data_type,pk,fk,nullable,description,example,source_predicate,notes
+medaka_strains,medaka_id,TEXT,PK,,NOT NULL,NBRP Medaka strain identifier,MT10,"dc:identifiere / dc:identifire (UNION; both are misspellings of dc:identifier in the source graph)","Extracted via UNION of two misspelled predicates. Matches the local name in the subject IRI http://lod.nbrp/Medaka/{medaka_id}"
+medaka_strains,label,TEXT,,,NULL,Short strain name or allele designation,b^dofl,rdfs:label,""
+medaka_strains,description,TEXT,,,NULL,Phenotype description in English,Melanophores are colorless at the larval stage,dc:description,""
+medaka_strains,deposit_org,TEXT,,,NULL,Name of the depositing organisation (English),Kyoto University,"brso:deposit_organization → rdfs:label (LANG=""en"")","Resolved from a blank node; English label selected with LANG filter"
+medaka_strains,provider,TEXT,,,NULL,IRI of the provider organisation,http://lod.nbrp/nbrpo/NBRP_organization_7_2,brso:provider,Stored as IRI string; dereference for human-readable name
+medaka_strains,homepage,TEXT,,,NULL,URL of the strain detail page on NBRP Medaka,https://shigen.nig.ac.jp/medaka/strainDetailAction.do?strainId=9,foaf:homepage,""
+medaka_disease_similarity,medaka_id,TEXT,PK1,medaka_strains.medaka_id,NOT NULL,NBRP Medaka strain identifier,MT337,"sio:SIO_000628 object (lod.nbrp IRI → local name)","FK to medaka_strains"
+medaka_disease_similarity,disease_id,TEXT,PK2,,NOT NULL,Disease identifier in CURIE format,Orphanet:2075,"sio:SIO_000628 object (disease IRI → CURIE)","Orphanet:NNN (Orphanet disease) or OMIM:NNN (OMIM disease). Source IRI: identifiers.org/orphanet/ or purl.bioontology.org/ontology/OMIM/"
+medaka_disease_similarity,disease_source,TEXT,,,NOT NULL,Ontology source of the disease ID,ordo,,"""ordo"" = Orphanet (ORDO); ""omim"" = OMIM. Derived from disease IRI prefix."
+medaka_disease_similarity,score,REAL,,,NOT NULL,Cosine similarity score between medaka phenotype and disease phenotype,0.31,sio:SIO_000300,"Range 0–1; higher = more similar phenotype. Only cosine metric is present in this graph (Jaccard/Dice/Simpson not observed in data)."
+medaka_disease_gene,medaka_id,TEXT,PK1,medaka_strains.medaka_id,NOT NULL,NBRP Medaka strain identifier,MT13,"obo:RO_0003301 subject (lod.nbrp IRI → local name)","FK to medaka_strains"
+medaka_disease_gene,disease_id,TEXT,PK2,,NOT NULL,Disease identifier in CURIE format,Orphanet:79435,"obo:RO_0003301 object (disease IRI → CURIE)","Orphanet:NNN or OMIM:NNN. Orphanet source IRI: www.orpha.net/ORDO/Orphanet_; OMIM source IRI: identifiers.org/mim/"
+medaka_disease_gene,disease_source,TEXT,,,NOT NULL,Ontology source of the disease ID,omim,,"""ordo"" = Orphanet; ""omim"" = OMIM. Derived from disease IRI prefix."
+medaka_phenotype_hp,medaka_id,TEXT,PK1,medaka_strains.medaka_id,NOT NULL,NBRP Medaka strain identifier,MT15,"obo:RO_0002200 subject (lod.nbrp IRI → local name)","FK to medaka_strains"
+medaka_phenotype_hp,hp_id,TEXT,PK2,,NOT NULL,Human Phenotype Ontology term in CURIE format,HP:0031377,"obo:RO_0002200 object (HP IRI → CURIE)","Converted from http://purl.obolibrary.org/obo/HP_{id}. Only 4 rows in current data."
