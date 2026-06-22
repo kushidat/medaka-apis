@@ -19,6 +19,16 @@
 **RDFを知らない外部研究者が、自分のリレーショナルDB（RDB）にロードしてSQLで正しく扱える形**
 （CSV / TSV / JSON ＋ スキーマ定義 ＋ 用語辞書 ＋ 由来情報）で配布する。
 
+**科学的な狙い（なぜこのデータを配るか）**：疾患研究に使えるメダカ（ヒト疾患モデル候補）を、
+次の2経路で推定できるようにすることが目的の1つ。配布データは、この2経路を
+SQLの結合（join）でたどれる状態にして渡す。
+- 経路A（遺伝子のつながり）：メダカ系統 → メダカ遺伝子 → ヒト遺伝子（オルソログ）→ ヒト疾患。
+  `medaka_diseaseID_throughMedgen_direct` がこの経路で推定したメダカ–ヒト疾患関係。
+- 経路B（表現型の類似度）：メダカの表現型 ↔ ヒト疾患の表現型 のコサイン類似度。
+  `medaka_disease_similarityScore` がこの経路で推定したメダカ–ヒト疾患関係。
+
+`medaka_test`（メダカ系統メタデータ）が両経路の起点（アンカー）。
+
 成果は「mdテンプレートを作ること」でも「READMEを綺麗にすること」でもない。
 **意味（semantic）と結合キー（join key）が分かる配布データ一式を、SQLで使える状態で公開すること** が完了条件。
 
@@ -55,31 +65,79 @@
 - SPARQLエンドポイント：`https://knowledge.brc.riken.jp/sparql`
 - SPARQList REST API：`https://splist.brc.riken.jp/sparqlist/`
   - 例：`medaka_sample_by_graph`（graph 指定でサンプル取得）, `bioresource_void`
-- グラフIRIの形式：`http://metadb.riken.jp/db/<graph>` および
-  `https://knowledge.brc.riken.jp/bioresource/upload/db/<graph>`
-  - **【要確認】** 配布対象として正となるグラフIRI（上記どちらの名前空間か）を Day0 で1つに確定する。
+- グラフIRI（SPARQLの `GRAPH <...>` で使う名前）：`http://metadb.riken.jp/db/<graph>`
+  （研究室提供のグラフリストのIRIに一致）。
+  `https://knowledge.brc.riken.jp/bioresource/upload/db/<graph>` は**アップロード先**であって、
+  クエリ用のグラフIRIではない。
+  - Day0 の疎通確認で `http://metadb.riken.jp/db/<graph>` が応答することを実機で最終確認する。
 - ライセンス：**CC BY**（配布物に出典・グラフIRI・取得日を必ず明記）
 
 ---
 
 ## 3. 配布対象グラフの確定
 
-ユーザー（研究室）提供の各グラフの意味と、配布要否の方針。
+研究室提供のグラフリスト（`medaka_graph.txt`）に基づく**実体13本**と、配布要否の方針。
+列「経路」は0章の経路A（遺伝子）/B（表現型）との対応。
 
-| グラフ | 内容（提供者説明） | 配布 | 方針・理由 |
-|---|---|---|---|
-| `medaka_test` | 実験用メダカのメタデータ。zp=ゼブラフィッシュ表現型, za=同・解剖学的部位 | ○ | 中核メタデータ |
-| `medaka_disease_similarityScore` | メダカ–表現型, ヒト疾患(ordo,omim)–表現型 の**類似度**で推測したメダカ–ヒト疾患関係。疾患–表現型はHPO(phenotype.hpoa)由来 | ○ | 中核。ordo/omim版の上位集合 |
-| `medaka_diseaseID_throughMedgen_direct` | メダカ–メダカ遺伝子, メダカ遺伝子–ヒト遺伝子, ヒト遺伝子–ヒト疾患 から推測したメダカ–ヒト疾患関係 | ○ | 中核（別経路の疾患関係） |
-| `medaka_hp` | メダカ–ヒト表現型の関係。ZF表現型–ヒト表現型マッピング(upheno.owl)由来 | ○ | 中核（表現型） |
-| `medaka_ncbigeneMedaka` | メダカ–メダカNCBI遺伝子の関係（改変メダカと改変遺伝子など） | ○ | 中核（遺伝子） |
-| `medaka_ncbigeneHuman_usingNcbigene` | メダカと関係するヒト遺伝子(ncbigene) | ○（要正規化） | **【要確認】** IRIプレフィックス違いの2系統あり。1テーブルに正規化するか別列で持つか Day1 で決定 |
-| `medaka_ensembl_entrezGene_mapping` | メダカ Ensembl ↔ Entrez 遺伝子IDのマッピング | △補助 | **【要確認】** 単独配布せず、遺伝子テーブルの結合補助として同梱が妥当か確認 |
-| `medaka_ordo_similarityScore` | `medaka_disease_similarityScore` の**部分集合** | ✕除外 | 上位集合を配布するため重複。除外で合意済み |
-| `medaka_omim_similarityScore` | 同上・部分集合 | ✕除外 | 同上 |
+| グラフ | 内容（提供者説明） | 経路 | 配布 | 方針・理由 |
+|---|---|---|---|---|
+| `medaka_test` | メダカ系統のメタデータ（系統・表現型注釈。zp=ZF表現型, za=ZF解剖学的部位） | 起点 | ○ | 全経路のアンカー（メダカ系統エンティティ） |
+| `medaka_zp` | メダカ→ZF表現型の関係（Monarch gene_to_phenotypic_feature 由来） | B | ○ ※ | 表現型経路の素データ。**【要確認】**配布するか中間データ扱いか |
+| `medaka_hp` | メダカ→ヒト表現型の関係（upheno.owl のZF↔ヒト表現型マッピング由来） | B | ○ | 表現型経路 |
+| `medaka_medakaEnsemblGene` | メダカ→メダカEnsembl遺伝子（relatedGene） | A | ○ ※ | 遺伝子経路（Ensembl ID系）。**【要確認】**`ncbigeneMedaka`と統合か別建てか |
+| `medaka_ensembl_entrezGene_mapping` | メダカ Ensembl ↔ Entrez(ncbigene) ID対応 | A補助 | △補助 | 共有ルックアップ表を1つ持ち、各遺伝子表からFK参照（列を増やさない） |
+| `medaka_ncbigeneMedaka` | メダカ→メダカNCBI(Entrez)遺伝子 | A | ○ | 遺伝子経路（Entrez ID系） |
+| `medaka_ncbigeneHuman_usingNcbigene` | メダカ→ヒト遺伝子(ncbigene) | A | ○ | 遺伝子経路。下の`nlm`版と**1テーブルに正規化** |
+| `medaka_nlmNcbigeneHuman_usingNcbigene` | 同上。IRI接頭辞が違うだけ | A | ○ | 上と同一内容のID系違い。二重配布せず1テーブルに正規化 |
+| `medaka_diseaseID_throughMedgen_direct` | 経路Aで推定したメダカ–ヒト疾患関係（ヒト遺伝子→ヒト疾患はMedGen由来。ordo/omim） | A | ○ | 中核（遺伝子経路の疾患関係） |
+| `medaka_disease_similarityScore` | 経路Bで推定したメダカ–ヒト疾患関係（表現型コサイン類似度。疾患–表現型はHPO phenotype.hpoa由来） | B | ○ | 中核（表現型経路の疾患関係）。ordo/omim版の上位集合 |
+| `medaka_ordo_similarityScore` | `medaka_disease_similarityScore` の部分集合（Orphanet分） | B | ✕除外 | 重複。上位集合を配布 |
+| `medaka_omim_similarityScore` | 同・部分集合（OMIM分） | B | ✕除外 | 重複。上位集合を配布 |
+| `medaka_medaka_similarityScore` | メダカ↔メダカの表現型類似度（似た表現型のメダカ） | B | ○ ※ | 表現型が似たメダカの探索。**【要確認】**配布対象に含めるか |
 
-> **【要確認】** 上記の○印グラフが配布対象の最終確定でよいか、Day0 冒頭で研究室として確定する。
-> Day1〜2 で短期完了するため、**まずは中核4〜5本に絞って公開し、補助は次バッチ**でもよい（後述 8章）。
+> ※印（`zp`, `medakaEnsemblGene`, `medaka_similarityScore`）は、DESIGN旧版に未記載だった4本のうちの判定保留分。
+> Day0 で研究室として配布要否を確定する。残り1本 `nlmNcbigeneHuman` は `ncbigeneHuman` への正規化で吸収。
+
+**結合の地図（どの列でSQL結合するか／実サンプルに基づく・創作なし）**
+- **メダカ系統ID**（`http://lod.nbrp/Medaka/<id>`）が全グラフ共通の結合キー。
+  ただしサンプルに `MT104` 形式と `337` 形式が混在 → **【要確認/Day1】** ID表記の正規化が必要。
+- **遺伝子**：`ncbigene` ID（`identifiers.org/ncbigene/...`）が `ncbigeneMedaka`・`ncbigeneHuman` を結ぶ。
+  `ensembl` ID（`ENSORLG...`）が `medakaEnsemblGene` を結び、`ensembl_entrezGene_mapping` が両者を橋渡し。
+- **疾患**：ordo（Orphanet）/ omim ID が `diseaseID_throughMedgen_direct` と `disease_similarityScore` を結ぶ。
+  → 経路Aと経路Bを「同じ疾患ID」で突き合わせれば、両経路が支持するメダカ–疾患関係を抽出できる。
+
+> **【要確認】** 配布対象の最終確定（特に ※印3本）を Day0 冒頭で研究室として決める。
+> Day1〜2 で短期完了するため、まずは**疾患推定の中核**（`medaka_test`, `medaka_disease_similarityScore`,
+> `medaka_diseaseID_throughMedgen_direct`, `medaka_hp`）で v0.1 を切り、遺伝子系・補助は v0.2 に回してよい（後述 8章）。
+
+---
+
+## 3.5 類似度スコアグラフのRDFスキーマと素データ由来
+
+研究室提供のスキーマ図（マウス版）と `medaka_graph.txt` のサンプルに基づく。述語が一致するためメダカも同型。
+
+**`*_similarityScore` の reified スキーマ（1件の関係＝1つの association ノード）**
+- association ノード
+  - `sio:SIO_000628`（refers to）→ 対象メダカ（`http://lod.nbrp/Medaka/<id>`）
+  - `sio:SIO_000628`（refers to）→ 疾患ID（ordo: `identifiers.org/orphanet/<id>` ／ omim: `purl.bioontology.org/ontology/OMIM/<id>`）
+  - `sio:SIO_000216`（has measurement value）→ 指標ノード
+- 指標ノード
+  - `rdf:type` → 指標種別（例：`cosine_index_between_medaka_and_ordo`）
+  - `sio:SIO_000300`（has value）→ スコア値（`xsd:float`）
+- 指標はスキーマ図上 **Jaccard / Dice / Simpson / Cosine の4種**が定義されうる。
+  メダカのサンプルはコサインのみ確認 → **【要確認/Day1】** メダカが実際に持つ指標を実データで確認。
+
+**配布層テーブル設計（案・Day1で確定）**
+`medaka_disease_similarityScore(medaka_id, medaka_label, disease_id, disease_source[ordo|omim], measure[jaccard|dice|simpson|cosine], score)`
+／ PK=(medaka_id, disease_id, measure)。**measure 列**を持たせれば複数指標を1表に正規化でき、指標が増えても列が増えない。
+
+**各グラフの素データ由来（`provenance.json` の根拠）**
+- 遺伝子→表現型：モデル生物は各プロジェクト提供（zebrafish＝Monarch KG の `zfin_gene_to_phenotype`）。→ `medaka_zp` の素データ系。
+- モデル生物表現型→ヒト表現型(HP)：uPheno（`upheno_all.owl`）等のマッピング。→ `medaka_hp` の素データ系。
+- HP→疾患：`hpoa`（`hpoa_disease_phenotype`, Monarch KG）。→ `medaka_disease_similarityScore` の疾患–表現型側。
+
+> スコープ注記：スキーマ検討図には Mouse/Rat や MA/ZFA/Uberon など **medaka-apis の範囲外**の要素も含まれる。
+> これらは背景文脈であり、配布対象には入れない。
 
 ---
 
@@ -189,8 +247,9 @@ ORDER BY DESC(?n)
 
 優先度順に**中核4本**（`medaka_test`, `medaka_disease_similarityScore`,
 `medaka_diseaseID_throughMedgen_direct`, `medaka_hp`）だけで先にRelease（v0.1）し、
-遺伝子系（`medaka_ncbigeneMedaka`, `ncbigeneHuman`, `ensembl_entrezGene_mapping`）は v0.2 に回す。
-これでDay2公開を確実にできる。
+遺伝子系・表現型素データ（`medaka_ncbigeneMedaka`, `ncbigeneHuman`(+`nlm`版を正規化),
+`medakaEnsemblGene`, 共有 `ensembl_entrezGene_mapping`, `medaka_zp`, `medaka_medaka_similarityScore`）は
+v0.2 以降に回す。これでDay2公開を確実にできる。
 
 > **【要確認】** v0.1 を中核4本で切るか、遺伝子系まで含めて一括公開するか。
 
