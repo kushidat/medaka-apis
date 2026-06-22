@@ -1,0 +1,37 @@
+graph,predicate_iri,curie,frequency,meaning,target_column
+medaka_test,http://www.w3.org/2000/01/rdf-schema#label,rdfs:label,1965,String label or name of the entity,medaka_strains.label
+medaka_test,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,rdf:type,1528,RDF class membership,not mapped (used for BiologicalResource filter)
+medaka_test,http://purl.org/dc/elements/1.1/description,dc:description,843,Textual description (phenotype),medaka_strains.description
+medaka_test,http://semanticscience.org/resource/SIO_001279,sio:SIO_001279,492,has attribute (SIO) — links strain to phenotype attribute node,not mapped
+medaka_test,http://www.w3.org/2000/01/rdf-schema#seeAlso,rdfs:seeAlso,488,Related resource link,not mapped
+medaka_test,http://lod.nbrp/dmf/indicatesEntity,lod.nbrp:indicatesEntity,398,Indicates associated phenotype or gene entity,not mapped
+medaka_test,http://xmlns.com/foaf/0.1/homepage,foaf:homepage,298,URL of strain detail page on NBRP Medaka,medaka_strains.homepage
+medaka_test,http://purl.org.jp/brso/deposit_organization,brso:deposit_organization,297,Depositing organisation (blank node; English label resolved via rdfs:label),medaka_strains.deposit_org
+medaka_test,http://purl.obolibrary.org/obo/RO_0002162,obo:RO_0002162,297,in taxon (RO),not mapped
+medaka_test,http://purl.org.jp/brso/provider,brso:provider,297,Provider organisation IRI,medaka_strains.provider
+medaka_test,http://purl.org.jp/brso/organism,brso:organism,297,Organism IRI,not mapped
+medaka_test,http://purl.org/dc/elements/1.1/identifier,dc:identifier,297,"Strain identifier (correctly-spelled dc:identifier; endpoint normalizes dc:identifiere→dc:identifier in frequency counts, but extraction uses UNION of both typo forms)",medaka_strains.medaka_id
+medaka_test,http://www.w3.org/2004/02/skos/core#altLabel,skos:altLabel,131,Alternative label,not mapped
+medaka_test,http://purl.org.jp/brso/has_genomicSegment,brso:has_genomicSegment,42,Has genomic segment (links to Ensembl gene),not mapped
+medaka_test,http://purl.org.jp/brso/genomic_future,brso:genomic_future,42,Genomic feature — source typo of genomic_feature,not mapped
+medaka_test,http://purl.org.jp/brso/gene_symbol,brso:gene_symbol,42,Gene symbol string,not mapped
+medaka_test,http://lod.nbrp/dmf/orthologSearch,lod.nbrp:orthologSearch,40,Ortholog search link,not mapped
+medaka_test,http://purl.org/dc/elements/1.1/identifire,dc:identifire,40,"Strain identifier — source typo of dc:identifier (40 subjects, strains with allele info)",medaka_strains.medaka_id
+medaka_test,http://purl.org.jp/brso/has_allele,brso:has_allele,39,Has allele,not mapped
+medaka_test,http://sequenceontology.org/browser/release_2.4.2/term/valiant_of,so:valiant_of,39,Variant of — source typo of variant_of (SO),not mapped
+medaka_test,http://lod.nbrp/dmf/zygocity,lod.nbrp:zygocity,13,Zygosity — source typo of zygosity,not mapped
+medaka_test,http://lod.nbrp/dmf/genotype,lod.nbrp:genotype,13,Genotype,not mapped
+medaka_test,http://xmlns.com/foaf/0.1/name,foaf:name,4,Name,not mapped
+medaka_test,http://lod.nbrp/nbrpo/upper_organization,lod.nbrp:upper_organization,2,Parent organisation,not mapped
+medaka_test,http://www.w3.org/2003/01/geo/wgs84_pos#lat,wgs84:lat,2,Latitude (WGS84),not mapped
+medaka_test,http://lod.nbrp/nbrpo/ResponsibleResrource,lod.nbrp:ResponsibleResrource,2,Responsible resource — source typo of ResponsibleResource,not mapped
+medaka_test,http://xmlns.com/foaf/0.1/based_near,foaf:based_near,2,Location (near),not mapped
+medaka_test,http://lod.nbrp/nbrpo/Contact,lod.nbrp:Contact,2,Contact information,not mapped
+medaka_test,http://www.w3.org/2003/01/geo/wgs84_pos#long,wgs84:long,2,Longitude (WGS84),not mapped
+medaka_test,http://purl.org/dc/terms/identifier,dcterms:identifier,1,Identifier (correct dc:terms spelling; 1 occurrence),not mapped
+medaka_disease_similarityScore,http://semanticscience.org/resource/SIO_000628,sio:SIO_000628,90,refers to (SIO) — links association node to medaka IRI or disease IRI (2 per assoc),medaka_disease_similarity.medaka_id / disease_id
+medaka_disease_similarityScore,http://www.w3.org/1999/02/22-rdf-syntax-ns#type,rdf:type,57,RDF class membership,not mapped (used for BiologicalResource filter)
+medaka_disease_similarityScore,http://semanticscience.org/resource/SIO_000300,sio:SIO_000300,57,"has value (SIO) — cosine similarity score (xsd:float, range 0–1)",medaka_disease_similarity.score
+medaka_disease_similarityScore,http://semanticscience.org/resource/SIO_000216,sio:SIO_000216,57,has measurement value (SIO) — links association node to metric node,not mapped (intermediate join key)
+medaka_diseaseID_throughMedgen_direct,http://purl.obolibrary.org/obo/RO_0003301,obo:RO_0003301,113,is model for (RO) — medaka strain is used as model for human disease,medaka_disease_gene.medaka_id / disease_id / disease_source
+medaka_hp,http://purl.obolibrary.org/obo/RO_0002200,obo:RO_0002200,4,has phenotype (RO) — medaka strain has Human Phenotype Ontology term,medaka_phenotype_hp.medaka_id / hp_id
