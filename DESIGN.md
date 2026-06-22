@@ -66,10 +66,9 @@ SQLの結合（join）でたどれる状態にして渡す。
 - SPARQList REST API：`https://splist.brc.riken.jp/sparqlist/`
   - 例：`medaka_sample_by_graph`（graph 指定でサンプル取得）, `bioresource_void`
 - グラフIRI（SPARQLの `GRAPH <...>` で使う名前）：`http://metadb.riken.jp/db/<graph>`
-  （研究室提供のグラフリストのIRIに一致）。
+  （研究室提供のグラフリストのIRIに一致）。**実機確認済み（v0.1 Day0）。**
   `https://knowledge.brc.riken.jp/bioresource/upload/db/<graph>` は**アップロード先**であって、
   クエリ用のグラフIRIではない。
-  - Day0 の疎通確認で `http://metadb.riken.jp/db/<graph>` が応答することを実機で最終確認する。
 - ライセンス：**CC BY**（配布物に出典・グラフIRI・取得日を必ず明記）
 
 ---
@@ -125,11 +124,12 @@ SQLの結合（join）でたどれる状態にして渡す。
   - `rdf:type` → 指標種別（例：`cosine_index_between_medaka_and_ordo`）
   - `sio:SIO_000300`（has value）→ スコア値（`xsd:float`）
 - 指標はスキーマ図上 **Jaccard / Dice / Simpson / Cosine の4種**が定義されうる。
-  メダカのサンプルはコサインのみ確認 → **【要確認/Day1】** メダカが実際に持つ指標を実データで確認。
+  **実データ確認済み（v0.1）：コサインのみ存在。Jaccard/Dice/Simpson は当グラフに存在しない。**
 
-**配布層テーブル設計（案・Day1で確定）**
-`medaka_disease_similarityScore(medaka_id, medaka_label, disease_id, disease_source[ordo|omim], measure[jaccard|dice|simpson|cosine], score)`
-／ PK=(medaka_id, disease_id, measure)。**measure 列**を持たせれば複数指標を1表に正規化でき、指標が増えても列が増えない。
+**配布層テーブル設計（v0.1確定）**
+`medaka_disease_similarityScore(medaka_id, disease_id, disease_source[ordo|omim], score)`
+／ PK=(medaka_id, disease_id)。v0.1 時点では指標がコサインのみのため measure 列は省略。
+将来 Jaccard 等が追加された場合は v0.x でカラム追加・PK 変更（後方互換注意）。
 
 **各グラフの素データ由来（`provenance.json` の根拠）**
 - 遺伝子→表現型：モデル生物は各プロジェクト提供（zebrafish＝Monarch KG の `zfin_gene_to_phenotype`）。→ `medaka_zp` の素データ系。
@@ -205,6 +205,21 @@ kushidat/medaka-apis/
 
 完了条件＝ **2-6 が満たされ、外部研究者がReleaseを落として `schema.sql` でテーブルを作り、curated データをロードしてSQLで結合クエリが書ける状態**。
 
+### v0.1 完了記録（2026-06-22）
+
+| テーブル | 件数 | 備考 |
+|---|---|---|
+| medaka_strains | 297 | brso:BiologicalResource に限定。Ensembl遺伝子エンティティを除外済み |
+| medaka_disease_similarity | 57 | MT337: 7件(ordo), MT374: 32件(ordo+omim)。Python raw-TSV joinで補完 |
+| medaka_disease_gene | 113 | ordo/omim混在。RO:0003301 フラット抽出 |
+| medaka_phenotype_hp | 4 | 4件が全量（正常。RO:0002200 トリプル数に一致） |
+
+- グラフIRI prefix：`http://metadb.riken.jp/db/` 確定・実機検証済み
+- disease_similarityScore 指標：コサインのみ（Jaccard/Dice/Simpson は存在しない）
+- medaka_hp 4件：少数だが全量であり欠損ではない
+- エンドポイント既知の挙動：rdf:type フィルタは UNION 内に置く必要あり、OPTIONAL FILTER はシングルクォート必須、同一述語2回の JOIN は Python 側で解決
+- **Release URL：https://github.com/kushidat/medaka-apis/releases/tag/v0.1**
+
 ---
 
 ## 6. 抽出SPARQLの出発点（テンプレート）
@@ -251,7 +266,7 @@ ORDER BY DESC(?n)
 `medakaEnsemblGene`, 共有 `ensembl_entrezGene_mapping`, `medaka_zp`, `medaka_medaka_similarityScore`）は
 v0.2 以降に回す。これでDay2公開を確実にできる。
 
-> **【要確認】** v0.1 を中核4本で切るか、遺伝子系まで含めて一括公開するか。
+> **確定（2026-06-22）**：v0.1 は中核4本で公開済み。v0.2 は遺伝子系グラフ（`medaka_ncbigeneMedaka`, `ncbigeneHuman`+`nlm`正規化, `medakaEnsemblGene`, `ensembl_entrezGene_mapping`）を対象とする。
 
 ---
 
