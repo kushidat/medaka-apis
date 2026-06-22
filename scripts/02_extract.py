@@ -138,8 +138,8 @@ def write_tsv(path: pathlib.Path, rows: list[tuple[str, str, str]]) -> None:
 
 def write_csv(path: pathlib.Path, headers: list[str], rows: list[list[str]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8", newline="\n") as f:
-        w = csv.writer(f)
+    with path.open("w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f, lineterminator="\n")
         w.writerow(headers)
         w.writerows(rows)
 
