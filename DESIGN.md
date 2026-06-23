@@ -220,6 +220,19 @@ kushidat/medaka-apis/
 - エンドポイント既知の挙動：rdf:type フィルタは UNION 内に置く必要あり、OPTIONAL FILTER はシングルクォート必須、同一述語2回の JOIN は Python 側で解決
 - **Release URL：https://github.com/kushidat/medaka-apis/releases/tag/v0.1**
 
+### v0.2 完了記録（2026-06-23）
+
+| テーブル | 件数 | 備考 |
+|---|---|---|
+| medaka_ncbigene_medaka | 37 | 数値EntrezIDのみ（トランスクリプトID `slc2a11b-201` 等を除外）。3 IRI形式を正規化 |
+| medaka_ncbigene_human | 24 | medaka_ncbigeneHuman_usingNcbigene（4 IRI形式×96トリプル）＋medaka_nlmNcbigeneHuman_usingNcbigene（1 IRI形式×24トリプル）を union・dedup |
+| medaka_ensembl_gene | 40 | 4 IRI形式を正規化。35ユニークEnsembl ID（複数系統が同一遺伝子を共有） |
+| medaka_ensembl_entrez_mapping | 19,011 | skos:exactMatchのみ・整数EntrezIDのみ・フルゲノム幅。非整数ID（gene symbol型）1,009ペアを除外。v0.2対象40行（35 Ensembl ID）を包含するスーパーセット。3 ensembl × 3 ncbigene = 9 IRI組み合わせを正規化 |
+
+- 検証：PK一意性・NA統一・UTF-8/LF・SQLite全8テーブル・FK整合 — 全5項目 PASS
+- ensembl_entrez_mapping の3 Ensembl ID（ENSORLG00000006024 / 6584 / 20496）はソースに Entrez マッピングなし → 正常欠落
+- **Release URL：https://github.com/kushidat/medaka-apis/releases/tag/v0.2**
+
 ---
 
 ## 6. 抽出SPARQLの出発点（テンプレート）
