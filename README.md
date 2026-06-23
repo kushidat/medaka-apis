@@ -21,7 +21,31 @@ Column definitions and source predicates: `metadata/codebook.csv`
 Schema DDL: `schema/schema.sql`  
 Extraction provenance: `metadata/provenance.json`
 
-## Load into SQLite
+## Quick start
+
+### Step 1 — Get the files
+
+**Option A: Git clone (recommended)**
+
+```sh
+git clone https://github.com/kushidat/medaka-apis.git
+cd medaka-apis
+```
+
+**Option B: Download ZIP from Release**
+
+Go to [Releases](https://github.com/kushidat/medaka-apis/releases) and download the latest `Source code (zip)`. Unzip and enter the directory.
+
+### Step 2 — Check SQLite version
+
+```sh
+sqlite3 --version
+```
+
+Version 3.32 or later is required for the `--skip 1` flag used below.  
+If your version is older, see [sqlite.org/download.html](https://www.sqlite.org/download.html) to upgrade.
+
+### Step 3 — Load into SQLite
 
 ```sh
 sqlite3 medaka.db < schema/schema.sql
@@ -57,9 +81,7 @@ SELECT count(*) FROM medaka_phenotype_zp;         -- 181
 SELECT count(*) FROM medaka_medaka_similarity;    -- 1
 ```
 
-`--skip 1` requires SQLite 3.32+. On older versions, remove the header row first or use a script to load.
-
-## Load into PostgreSQL
+### Step 4 — Load into PostgreSQL
 
 ```sh
 psql -d mydb -f schema/schema.sql
