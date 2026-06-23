@@ -1,0 +1,6 @@
+s	p	o
+http://example.org/cosine_index_between_436_and_15	http://www.w3.org/1999/02/22-rdf-syntax-ns#type	http://example.org/cosine_index_between_medaka_and_medaka
+http://example.org/cosine_index_between_436_and_15	http://semanticscience.org/resource/SIO_000300	1.0
+http://example.org/436_and_15_association	http://semanticscience.org/resource/SIO_000628	http://lod.nbrp/Medaka/MT15
+http://example.org/436_and_15_association	http://semanticscience.org/resource/SIO_000628	http://lod.nbrp/Medaka/MT436
+http://example.org/436_and_15_association	http://semanticscience.org/resource/SIO_000216	http://example.org/cosine_index_between_436_and_15

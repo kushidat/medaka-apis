@@ -1,4 +1,4 @@
--- medaka-apis schema v0.2
+-- medaka-apis schema v0.3
 -- Source: RIKEN BioResource Knowledge Graph <https://knowledge.brc.riken.jp/sparql>
 -- Graph IRI prefix: http://metadb.riken.jp/db/
 -- License: CC BY
@@ -129,3 +129,36 @@ CREATE TABLE medaka_ensembl_entrez_mapping (
 );
 CREATE INDEX idx_ensembl_entrez_ensembl ON medaka_ensembl_entrez_mapping (ensembl_id);
 CREATE INDEX idx_ensembl_entrez_ncbi    ON medaka_ensembl_entrez_mapping (ncbigene_id);
+
+-- ============================================================
+-- medaka_phenotype_zp  (v0.3)
+-- Source graph: medaka_zp
+-- Direct medaka–Zebrafish Phenotype Ontology term annotations.
+-- zp_id is in CURIE format: ZP:NNNNNNN.
+-- ============================================================
+CREATE TABLE medaka_phenotype_zp (
+    medaka_id  TEXT  NOT NULL,
+    zp_id      TEXT  NOT NULL,   -- ZPO term, e.g. "ZP:0002438"
+    PRIMARY KEY (medaka_id, zp_id),
+    FOREIGN KEY (medaka_id) REFERENCES medaka_strains (medaka_id)
+);
+CREATE INDEX idx_pheno_zp_medaka ON medaka_phenotype_zp (medaka_id);
+CREATE INDEX idx_pheno_zp_id     ON medaka_phenotype_zp (zp_id);
+
+-- ============================================================
+-- medaka_medaka_similarity  (v0.3)
+-- Source graph: medaka_medaka_similarityScore
+-- Medaka–medaka phenotype cosine similarity.
+-- Pair stored with medaka_id_1 < medaka_id_2 (lexicographic) to avoid duplicates.
+-- Note: subject IRIs in source graph use example.org namespace.
+-- ============================================================
+CREATE TABLE medaka_medaka_similarity (
+    medaka_id_1  TEXT  NOT NULL,
+    medaka_id_2  TEXT  NOT NULL,
+    score        REAL  NOT NULL,   -- cosine similarity [0, 1]
+    PRIMARY KEY (medaka_id_1, medaka_id_2),
+    FOREIGN KEY (medaka_id_1) REFERENCES medaka_strains (medaka_id),
+    FOREIGN KEY (medaka_id_2) REFERENCES medaka_strains (medaka_id)
+);
+CREATE INDEX idx_medaka_sim_id1 ON medaka_medaka_similarity (medaka_id_1);
+CREATE INDEX idx_medaka_sim_id2 ON medaka_medaka_similarity (medaka_id_2);
