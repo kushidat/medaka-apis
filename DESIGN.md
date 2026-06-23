@@ -233,6 +233,16 @@ kushidat/medaka-apis/
 - ensembl_entrez_mapping の3 Ensembl ID（ENSORLG00000006024 / 6584 / 20496）はソースに Entrez マッピングなし → 正常欠落
 - **Release URL：https://github.com/kushidat/medaka-apis/releases/tag/v0.2**
 
+### v0.3 完了記録（2026-06-23）
+
+| テーブル | 件数 | 備考 |
+|---|---|---|
+| medaka_phenotype_zp | 181 | RO:0002200 フラット抽出。ZP CURIE（`ZP:NNNNNNN`）に正規化。medaka_hp と同一構造 |
+| medaka_medaka_similarity | 1 | 元グラフ全量（5トリプル・1ペア）。MT15–MT436, cosine=1.0。ソースの Subject IRI は example.org 名前空間 |
+
+- 検証：PK一意性・NA統一・UTF-8/LF・SQLite全10テーブル・FK整合 — 全5項目 PASS
+- **Release URL：https://github.com/kushidat/medaka-apis/releases/tag/v0.3**
+
 ---
 
 ## 6. 抽出SPARQLの出発点（テンプレート）
