@@ -1,4 +1,4 @@
--- medaka-apis schema v0.1
+-- medaka-apis schema v0.2
 -- Source: RIKEN BioResource Knowledge Graph <https://knowledge.brc.riken.jp/sparql>
 -- Graph IRI prefix: http://metadb.riken.jp/db/
 -- License: CC BY
@@ -68,3 +68,64 @@ CREATE TABLE medaka_phenotype_hp (
 );
 CREATE INDEX idx_pheno_hp_medaka ON medaka_phenotype_hp (medaka_id);
 CREATE INDEX idx_pheno_hp_id     ON medaka_phenotype_hp (hp_id);
+
+-- ============================================================
+-- medaka_ncbigene_medaka  (v0.2)
+-- Source graph: medaka_ncbigeneMedaka
+-- Medaka strain → medaka Entrez (NCBI Gene) ID.
+-- Transcript-level IDs (e.g. slc2a11b-201) excluded; integer IDs only.
+-- ============================================================
+CREATE TABLE medaka_ncbigene_medaka (
+    medaka_id   TEXT  NOT NULL,
+    ncbigene_id TEXT  NOT NULL,   -- NCBI Gene integer ID, e.g. "101159023"
+    PRIMARY KEY (medaka_id, ncbigene_id),
+    FOREIGN KEY (medaka_id) REFERENCES medaka_strains (medaka_id)
+);
+CREATE INDEX idx_ncbigene_medaka_strain ON medaka_ncbigene_medaka (medaka_id);
+CREATE INDEX idx_ncbigene_medaka_gene   ON medaka_ncbigene_medaka (ncbigene_id);
+
+-- ============================================================
+-- medaka_ncbigene_human  (v0.2)
+-- Source graphs: medaka_ncbigeneHuman_usingNcbigene +
+--                medaka_nlmNcbigeneHuman_usingNcbigene (merged, deduped)
+-- Medaka strain → human ortholog Entrez ID.
+-- ============================================================
+CREATE TABLE medaka_ncbigene_human (
+    medaka_id   TEXT  NOT NULL,
+    ncbigene_id TEXT  NOT NULL,   -- human NCBI Gene integer ID, e.g. "51151"
+    PRIMARY KEY (medaka_id, ncbigene_id),
+    FOREIGN KEY (medaka_id) REFERENCES medaka_strains (medaka_id)
+);
+CREATE INDEX idx_ncbigene_human_strain ON medaka_ncbigene_human (medaka_id);
+CREATE INDEX idx_ncbigene_human_gene   ON medaka_ncbigene_human (ncbigene_id);
+
+-- ============================================================
+-- medaka_ensembl_gene  (v0.2)
+-- Source graph: medaka_medakaEnsemblGene
+-- Medaka strain → medaka Ensembl gene ID (ENSORLG...).
+-- ============================================================
+CREATE TABLE medaka_ensembl_gene (
+    medaka_id  TEXT  NOT NULL,
+    ensembl_id TEXT  NOT NULL,   -- Ensembl gene ID, e.g. "ENSORLG00000008054"
+    PRIMARY KEY (medaka_id, ensembl_id),
+    FOREIGN KEY (medaka_id) REFERENCES medaka_strains (medaka_id)
+);
+CREATE INDEX idx_ensembl_gene_strain  ON medaka_ensembl_gene (medaka_id);
+CREATE INDEX idx_ensembl_gene_ensembl ON medaka_ensembl_gene (ensembl_id);
+
+-- ============================================================
+-- medaka_ensembl_entrez_mapping  (v0.2)
+-- Source graph: medaka_ensembl_entrezGene_mapping
+-- Medaka Ensembl gene ↔ Entrez gene ID bridge table (skos:exactMatch only).
+-- Covers the full medaka genome (~60 K pairs), not only strains in this release.
+-- Join path: medaka_ensembl_gene.ensembl_id
+--          → medaka_ensembl_entrez_mapping.ensembl_id
+--          → medaka_ncbigene_medaka.ncbigene_id
+-- ============================================================
+CREATE TABLE medaka_ensembl_entrez_mapping (
+    ensembl_id  TEXT  NOT NULL,
+    ncbigene_id TEXT  NOT NULL,
+    PRIMARY KEY (ensembl_id, ncbigene_id)
+);
+CREATE INDEX idx_ensembl_entrez_ensembl ON medaka_ensembl_entrez_mapping (ensembl_id);
+CREATE INDEX idx_ensembl_entrez_ncbi    ON medaka_ensembl_entrez_mapping (ncbigene_id);
