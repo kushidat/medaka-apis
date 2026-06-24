@@ -6,19 +6,15 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 # medaka_test → medaka_strains
 #
-# dc:identifier is misspelled in two ways in the source graph:
-#   dc:identifiere (297 occurrences, all subjects) and dc:identifire (40 occurrences, subset).
-# UNION captures both; column is named medaka_id (correct spelling).
+# 2026-06-24 更新：ソースグラフのスペルミスをすべて dc:identifier に修正済み。
+# 旧: dc:identifiere / dc:identifire の UNION → 新: dc:identifier のみ。
 #
-# brso:BiologicalResource type filter is placed INSIDE each UNION branch (not after).
-# The endpoint at knowledge.brc.riken.jp fails to return results when the type
-# constraint is placed outside the UNION.
+# brso:BiologicalResource type filter は WHERE 句に直接置く。
 #
 # rdfs:label: untagged (lang='') in source — 1 label per BiologicalResource, no filter needed.
-# dc:description: 54 strains have both @en and @ja versions; FILTER(LANG=...) with
-#   SINGLE quotes must be used — this endpoint returns 0 rows when double-quoted
-#   string literals appear inside OPTIONAL FILTER blocks after a UNION.
-# deposit_org: blank node resolved to English rdfs:label (single-quoted 'en').
+# dc:description: @en / @ja 混在。FILTER の文字列リテラルはシングルクォート必須
+#   （このエンドポイントは OPTIONAL FILTER 内でダブルクォートを使うと 0件になる）。
+# deposit_org: ブランクノードを英語 rdfs:label で解決（シングルクォート 'en'）。
 
 SELECT DISTINCT
   ?medaka_id
@@ -30,15 +26,8 @@ SELECT DISTINCT
 WHERE {
   GRAPH <http://metadb.riken.jp/db/medaka_test> {
 
-    {
-      ?s <http://purl.org/dc/elements/1.1/identifiere> ?medaka_id .
-      ?s rdf:type brso:BiologicalResource .
-    }
-    UNION
-    {
-      ?s <http://purl.org/dc/elements/1.1/identifire> ?medaka_id .
-      ?s rdf:type brso:BiologicalResource .
-    }
+    ?s <http://purl.org/dc/elements/1.1/identifier> ?medaka_id .
+    ?s rdf:type brso:BiologicalResource .
 
     OPTIONAL { ?s rdfs:label ?label }
     OPTIONAL {
