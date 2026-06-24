@@ -220,6 +220,14 @@ kushidat/medaka-apis/
 - エンドポイント既知の挙動：rdf:type フィルタは UNION 内に置く必要あり、OPTIONAL FILTER はシングルクォート必須、同一述語2回の JOIN は Python 側で解決
 - **Release URL：https://github.com/kushidat/medaka-apis/releases/tag/v0.1**
 
+### v0.1.1 パッチ記録（2026-06-24）
+
+- ソースグラフ `medaka_test` のスペルミスが修正された：`dc:identifiere` / `dc:identifire` → `dc:identifier`（正しいスペル）
+- これに伴い `queries/medaka_strains.rq` の UNION を削除し `dc:identifier` のみに統一
+- `metadata/provenance.json` の `sparql_query_content`（medaka_test）を新クエリに更新
+- curated 行数（297件）に変化なし。全検証 PASS
+- **Release URL：https://github.com/kushidat/medaka-apis/releases/tag/v0.1.1**
+
 ### v0.2 完了記録（2026-06-23）
 
 | テーブル | 件数 | 備考 |
